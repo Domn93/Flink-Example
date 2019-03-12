@@ -69,7 +69,7 @@ object StreamSQLExample {
 
     val tmpTable = result.toAppendStream[Order]
     tEnv.registerDataStream("tmpTable", tmpTable, 'user, 'product, 'amount)
-    var result2 = tEnv.sqlQuery("SELECT * FROM tmpTable WHERE amount > 2 ")
+    val result2 = tEnv.sqlQuery("SELECT * FROM tmpTable WHERE amount > 2 ")
     result2.toAppendStream[Order].print()
     result2.toAppendStream[Order].writeAsCsv("D://a.txt").setParallelism(1)
     //    tEnv.registerDataStream("TempTable",result)

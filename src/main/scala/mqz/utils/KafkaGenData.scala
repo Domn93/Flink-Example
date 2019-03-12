@@ -3,8 +3,9 @@ package mqz.utils
 import java.util
 import java.util.Properties
 
-import mqz.entity.Order
-import org.apache.kafka.clients.consumer.{ConsumerRecord, ConsumerRecords, KafkaConsumer}
+import com.alibaba.fastjson.JSON
+import mqz.JavaOrder
+import org.apache.kafka.clients.consumer.{ConsumerRecord, KafkaConsumer}
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 
 import scala.util.Random
@@ -17,12 +18,20 @@ object KafkaGenData {
   val GROUP_ID = "group1"
   val METADATA_BROKER_LIST = "hadoop003:9092,hadoop004:9092"
 
+  val ORDER_KIND = List(
+    "pear"
+    , "pen"
+    , "rubber"
+    , "beer"
+  )
+
+
   def main(args: Array[String]): Unit = {
-    producerGenData(TOPIC)
+    producerGenOrderJSON(TOPIC)
     //    showConsumerData(TOPIC)
   }
 
-  def producerGenOrder(topic: String): Unit = {
+  def producerGenOrderJSON(topic: String): Unit = {
     val props = new Properties()
     props.put("bootstrap.servers", METADATA_BROKER_LIST)
     props.put("acks", "all")
@@ -31,8 +40,33 @@ object KafkaGenData {
     val producer = new KafkaProducer[String, String](props)
     (1 to 100).foreach(i => {
       print(".")
-      val order = Order(i, "pen", Random.nextInt(100))
-      val msg = new ProducerRecord(topic,"key",order.toString)
+//      val javaOrder = new JavaOrder(i.toLong, "pen", Random.nextInt(5));
+//      val order = Order(i, "pen", Random.nextInt(5))
+
+//      val json = s"{\"id\":$i,\"product\":\"pen\",\"amount\":${Random.nextInt(5)}}"
+
+      val json = "{\"id\":2,\"product\":\"peer\",\"amount\":5}"
+      val msg = new ProducerRecord(topic, "key",json)
+      producer.send(msg)
+      Thread.sleep(1000)
+    })
+    producer.close()
+
+  }
+
+  def producerGenOrderText(topic: String): Unit = {
+    val spliter = "|"
+    val props = new Properties()
+    props.put("bootstrap.servers", METADATA_BROKER_LIST)
+    props.put("acks", "all")
+    props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
+    props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
+    val producer = new KafkaProducer[String, String](props)
+    (1 to 100).foreach(i => {
+      print(".")
+      val orderStr = i + spliter + ORDER_KIND(Random.nextInt(ORDER_KIND.length)) + spliter + Random.nextInt(5)
+      //      val order = Order(i, "pen", Random.nextInt(5))
+      val msg = new ProducerRecord(topic, "key", orderStr)
       producer.send(msg)
       Thread.sleep(1000)
     })
