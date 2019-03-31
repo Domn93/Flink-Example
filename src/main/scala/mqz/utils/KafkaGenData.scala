@@ -14,9 +14,11 @@ import scala.util.Random
 object KafkaGenData {
 
   val TOPIC = "source"
-  val ZOOKEEPER_CONNECT = "hadoop003:2181,hadoop004:2181"
+//  val ZOOKEEPER_CONNECT = "hadoop003:2181,hadoop004:2181"
   val GROUP_ID = "group1"
-  val METADATA_BROKER_LIST = "hadoop003:9092,hadoop004:9092"
+  //  val METADATA_BROKER_LIST = "hadoop003:9092,hadoop004:9092"
+  val METADATA_BROKER_LIST = "172.16.13.116:9092,172.16.13.117:9092,172.16.13.118:9092,"
+  val ZOOKEEPER_CONNECT = "172.16.13.116:2181/kafka011"
 
   val ORDER_KIND = List(
     "pear"
@@ -45,7 +47,8 @@ object KafkaGenData {
 
 //      val json = s"{\"id\":$i,\"product\":\"pen\",\"amount\":${Random.nextInt(5)}}"
 
-      val json = "{\"id\":2,\"product\":\"peer\",\"amount\":5}"
+//      val json = "{\"id\":2,\"product\":\"peer\",\"amount\":5}"
+      val json = "{\"sno\":\"2\",\"name\":\"zhangsan\",\"age\":\"5\"}"
       val msg = new ProducerRecord(topic, "key",json)
       producer.send(msg)
       Thread.sleep(1000)

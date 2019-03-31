@@ -81,6 +81,7 @@ object Source2Table2Sink {
 //      """.stripMargin
     println(s"sql is = $sqlQuery")
     val resultTable = tEnv.sqlQuery(sqlQuery)
+//    tEnv.registerTable("sss",resultTable)
     val resultDS: DataStream[Row] = resultTable.toAppendStream[Row]
     val res = resultDS.map(row=>{
       row.toString
